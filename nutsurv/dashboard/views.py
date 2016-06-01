@@ -434,3 +434,18 @@ class SurveyMapViewset(viewsets.ModelViewSet):
 
     queryset = HouseholdSurveyJSON.objects.all()
     serializer_class = SurveyMapSerializer
+
+    def _serialize_queryset(self, queryset):
+        queryset = queryset.values('location', 'team_lead__pk', 'cluster')
+        return [{
+            'location': {
+                'type': 'Point',
+                'coordinates': record['location'].coords
+            },
+            'team_lead': record['team_lead__pk'],
+            'cluster': record['cluster']} for record in queryset]
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        return Response(self._serialize_queryset(queryset))
