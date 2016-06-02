@@ -24,6 +24,7 @@ from .models import HouseholdMember
 
 from rest_framework import viewsets, pagination
 from rest_framework.decorators import list_route
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
 from importer import anthrocomputation
@@ -433,6 +434,7 @@ class SurveyMapViewset(viewsets.ModelViewSet):
     """
 
     queryset = HouseholdSurveyJSON.objects.all()
+    renderer_classes = (JSONRenderer,)
     serializer_class = SurveyMapSerializer
 
     def _serialize_queryset(self, queryset):
@@ -442,7 +444,7 @@ class SurveyMapViewset(viewsets.ModelViewSet):
                 'type': 'Point',
                 'coordinates': record['location'].coords
             },
-            'team_lead': record['team_lead__pk'],
+            'teamLead': record['team_lead__pk'],
             'cluster': record['cluster']} for record in queryset]
 
     def list(self, request, *args, **kwargs):
